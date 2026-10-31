@@ -1,0 +1,474 @@
+{
+  "dataset_name": "阿里巴巴天池 Taobao UserBehavior",
+  "source_url": "https://tianchi.aliyun.com/dataset/649",
+  "mirror_url": "https://www.kaggle.com/datasets/marwa80/userbehavior",
+  "license": "CC BY-NC-SA 4.0",
+  "accessed_at": "2026-10-31",
+  "analysis_type": "个人独立公开数据分析，不代表淘宝或任何公司的真实经营项目",
+  "cleaning": {
+    "raw_rows": 100150807,
+    "valid_rows": 100095231,
+    "bad_timestamp_rows": 55576,
+    "invalid_behavior_rows": 0,
+    "missing_cells": 0,
+    "duplicate_rows_within_chunks": 49,
+    "valid_window": [
+      "2017-11-25T00:00:00+08:00",
+      "2017-12-03T23:59:59+08:00"
+    ],
+    "timezone": "UTC+08:00"
+  },
+  "coverage": {
+    "users": 987991,
+    "items": 4161138,
+    "categories": 9437,
+    "interactions": 100095231
+  },
+  "behavior_events": {
+    "pv": {
+      "events": 89660688,
+      "share": 0.8958
+    },
+    "cart": {
+      "events": 5530446,
+      "share": 0.0553
+    },
+    "fav": {
+      "events": 2888258,
+      "share": 0.0289
+    },
+    "buy": {
+      "events": 2015839,
+      "share": 0.0201
+    }
+  },
+  "funnel": [
+    {
+      "stage": "全部活跃用户",
+      "users": 987991,
+      "rate_from_previous": 1.0,
+      "rate_from_pv": null
+    },
+    {
+      "stage": "浏览用户 PV",
+      "users": 984105,
+      "rate_from_previous": 0.9961,
+      "rate_from_pv": 1.0
+    },
+    {
+      "stage": "收藏或加购用户",
+      "users": 859275,
+      "rate_from_previous": 0.8732,
+      "rate_from_pv": 0.8732
+    },
+    {
+      "stage": "购买用户",
+      "users": 672404,
+      "rate_from_previous": 0.7825,
+      "rate_from_pv": 0.6833
+    }
+  ],
+  "retention": {
+    "d1_eligible_users": 987990,
+    "d1_retained_users": 741433,
+    "d1_rate": 0.7504,
+    "d7_eligible_users": 864829,
+    "d7_retained_users": 850409,
+    "d7_rate": 0.9833
+  },
+  "daily_metrics": [
+    {
+      "date": "2017-11-25",
+      "events": 10420015,
+      "active_users": 706641,
+      "buyers": 132622,
+      "buyer_rate": 0.1877,
+      "pv": 9353423,
+      "cart": 563376,
+      "fav": 302071,
+      "buy": 201145
+    },
+    {
+      "date": "2017-11-26",
+      "events": 10664602,
+      "active_users": 715516,
+      "buyers": 136048,
+      "buyer_rate": 0.1901,
+      "pv": 9567423,
+      "cart": 582581,
+      "fav": 308954,
+      "buy": 205644
+    },
+    {
+      "date": "2017-11-27",
+      "events": 10101147,
+      "active_users": 710094,
+      "buyers": 146934,
+      "buyer_rate": 0.2069,
+      "pv": 9041187,
+      "cart": 541904,
+      "fav": 291221,
+      "buy": 226835
+    },
+    {
+      "date": "2017-11-28",
+      "events": 9878190,
+      "active_users": 709257,
+      "buyers": 139845,
+      "buyer_rate": 0.1972,
+      "pv": 8842933,
+      "cart": 534157,
+      "fav": 289100,
+      "buy": 212000
+    },
+    {
+      "date": "2017-11-29",
+      "events": 10284073,
+      "active_users": 718922,
+      "buyers": 146220,
+      "buyer_rate": 0.2034,
+      "pv": 9210821,
+      "cart": 551593,
+      "fav": 298587,
+      "buy": 223072
+    },
+    {
+      "date": "2017-11-30",
+      "events": 10447740,
+      "active_users": 730597,
+      "buyers": 146128,
+      "buyer_rate": 0.2,
+      "pv": 9358998,
+      "cart": 565015,
+      "fav": 302264,
+      "buy": 221463
+    },
+    {
+      "date": "2017-12-01",
+      "events": 10859436,
+      "active_users": 740139,
+      "buyers": 139971,
+      "buyer_rate": 0.1891,
+      "pv": 9718959,
+      "cart": 623346,
+      "fav": 307115,
+      "buy": 210016
+    },
+    {
+      "date": "2017-12-02",
+      "events": 13777869,
+      "active_users": 970401,
+      "buyers": 174487,
+      "buyer_rate": 0.1798,
+      "pv": 12329644,
+      "cart": 793569,
+      "fav": 396749,
+      "buy": 257907
+    },
+    {
+      "date": "2017-12-03",
+      "events": 13662159,
+      "active_users": 966977,
+      "buyers": 173225,
+      "buyer_rate": 0.1791,
+      "pv": 12237300,
+      "cart": 774905,
+      "fav": 392197,
+      "buy": 257757
+    }
+  ],
+  "hourly_peak": {
+    "hour": 21,
+    "events": 8369714,
+    "share": 0.0836
+  },
+  "activity_segments": [
+    {
+      "activities_per_user": "1",
+      "users": 88,
+      "events": 88,
+      "user_share": 0.0001,
+      "event_share": 0.0
+    },
+    {
+      "activities_per_user": "2-5",
+      "users": 3648,
+      "events": 15857,
+      "user_share": 0.0037,
+      "event_share": 0.0002
+    },
+    {
+      "activities_per_user": "6-20",
+      "users": 90001,
+      "events": 1271377,
+      "user_share": 0.0911,
+      "event_share": 0.0127
+    },
+    {
+      "activities_per_user": "21-100",
+      "users": 524071,
+      "events": 29220781,
+      "user_share": 0.5304,
+      "event_share": 0.2919
+    },
+    {
+      "activities_per_user": "100+",
+      "users": 370183,
+      "events": 69587128,
+      "user_share": 0.3747,
+      "event_share": 0.6952
+    }
+  ],
+  "rf_buyer_segments": [
+    {
+      "购买频次": "购买1次",
+      "近0-2天": 90260,
+      "近3-5天": 70749,
+      "近6-8天": 67537
+    },
+    {
+      "购买频次": "购买2-4次",
+      "近0-2天": 197942,
+      "近3-5天": 88598,
+      "近6-8天": 35084
+    },
+    {
+      "购买频次": "购买5次以上",
+      "近0-2天": 97725,
+      "近3-5天": 20815,
+      "近6-8天": 3694
+    }
+  ],
+  "top_categories": [
+    {
+      "behavior": "pv",
+      "category_id": 4756105,
+      "events": 4477682,
+      "share": 0.0499
+    },
+    {
+      "behavior": "pv",
+      "category_id": 2355072,
+      "events": 3151734,
+      "share": 0.0352
+    },
+    {
+      "behavior": "pv",
+      "category_id": 4145813,
+      "events": 3150716,
+      "share": 0.0351
+    },
+    {
+      "behavior": "pv",
+      "category_id": 3607361,
+      "events": 2976359,
+      "share": 0.0332
+    },
+    {
+      "behavior": "pv",
+      "category_id": 982926,
+      "events": 2798730,
+      "share": 0.0312
+    },
+    {
+      "behavior": "pv",
+      "category_id": 2520377,
+      "events": 2029469,
+      "share": 0.0226
+    },
+    {
+      "behavior": "pv",
+      "category_id": 4801426,
+      "events": 1864651,
+      "share": 0.0208
+    },
+    {
+      "behavior": "pv",
+      "category_id": 1320293,
+      "events": 1793240,
+      "share": 0.02
+    },
+    {
+      "behavior": "pv",
+      "category_id": 2465336,
+      "events": 1504738,
+      "share": 0.0168
+    },
+    {
+      "behavior": "pv",
+      "category_id": 3002561,
+      "events": 1421832,
+      "share": 0.0159
+    },
+    {
+      "behavior": "buy",
+      "category_id": 1464116,
+      "events": 34591,
+      "share": 0.0172
+    },
+    {
+      "behavior": "buy",
+      "category_id": 2735466,
+      "events": 33730,
+      "share": 0.0167
+    },
+    {
+      "behavior": "buy",
+      "category_id": 2885642,
+      "events": 31844,
+      "share": 0.0158
+    },
+    {
+      "behavior": "buy",
+      "category_id": 4145813,
+      "events": 31658,
+      "share": 0.0157
+    },
+    {
+      "behavior": "buy",
+      "category_id": 4756105,
+      "events": 28258,
+      "share": 0.014
+    },
+    {
+      "behavior": "buy",
+      "category_id": 4801426,
+      "events": 26495,
+      "share": 0.0131
+    },
+    {
+      "behavior": "buy",
+      "category_id": 982926,
+      "events": 24825,
+      "share": 0.0123
+    },
+    {
+      "behavior": "buy",
+      "category_id": 2640118,
+      "events": 18332,
+      "share": 0.0091
+    },
+    {
+      "behavior": "buy",
+      "category_id": 4159072,
+      "events": 18016,
+      "share": 0.0089
+    },
+    {
+      "behavior": "buy",
+      "category_id": 1320293,
+      "events": 17137,
+      "share": 0.0085
+    }
+  ],
+  "top_buy_items": [
+    {
+      "item_id": 3122135,
+      "buy_events": 1408,
+      "share": 0.0007
+    },
+    {
+      "item_id": 3031354,
+      "buy_events": 950,
+      "share": 0.0005
+    },
+    {
+      "item_id": 3964583,
+      "buy_events": 675,
+      "share": 0.0003
+    },
+    {
+      "item_id": 2560262,
+      "buy_events": 665,
+      "share": 0.0003
+    },
+    {
+      "item_id": 2964774,
+      "buy_events": 629,
+      "share": 0.0003
+    },
+    {
+      "item_id": 740947,
+      "buy_events": 560,
+      "share": 0.0003
+    },
+    {
+      "item_id": 1910706,
+      "buy_events": 548,
+      "share": 0.0003
+    },
+    {
+      "item_id": 1116492,
+      "buy_events": 512,
+      "share": 0.0003
+    },
+    {
+      "item_id": 705557,
+      "buy_events": 497,
+      "share": 0.0002
+    },
+    {
+      "item_id": 4443059,
+      "buy_events": 493,
+      "share": 0.0002
+    }
+  ],
+  "dominant_user_paths": [
+    {
+      "path_code": 11,
+      "path": "浏览+加购+购买",
+      "users": 324802,
+      "share": 0.3287
+    },
+    {
+      "path_code": 15,
+      "path": "浏览+加购+收藏+购买",
+      "users": 203606,
+      "share": 0.2061
+    },
+    {
+      "path_code": 3,
+      "path": "浏览+加购",
+      "users": 143149,
+      "share": 0.1449
+    },
+    {
+      "path_code": 13,
+      "path": "浏览+收藏+购买",
+      "users": 71870,
+      "share": 0.0727
+    },
+    {
+      "path_code": 9,
+      "path": "浏览+购买",
+      "users": 69032,
+      "share": 0.0699
+    },
+    {
+      "path_code": 7,
+      "path": "浏览+加购+收藏",
+      "users": 64117,
+      "share": 0.0649
+    },
+    {
+      "path_code": 1,
+      "path": "仅浏览",
+      "users": 59575,
+      "share": 0.0603
+    },
+    {
+      "path_code": 5,
+      "path": "浏览+收藏",
+      "users": 47954,
+      "share": 0.0485
+    }
+  ],
+  "notes": [
+    "全量汇总基于清洗后的有效行为记录计算。",
+    "行为漏斗按用户是否在观察窗口内出现相应行为定义，不代表严格时间顺序。",
+    "数据集没有价格和成本字段，因此只做 RF 用户分层，不计算金额 M。",
+    "留存采用自然日口径，7 日留存仅纳入首日出现在 11 月 25 日或 26 日的用户。",
+    "公开样本使用确定性哈希抽样，抽样模数为 2000，可按脚本复现。",
+    "结果描述观察窗口内的相关关系，不构成因果结论。"
+  ]
+}

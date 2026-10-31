@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>客户罗盘 - 客户跟进与需求洞察工作台</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --ink: #17212b;
+      --muted: #667085;
+      --line: #d8dee5;
+      --navy: #102a33;
+      --navy-2: #183b45;
+      --teal: #0c7c74;
+      --teal-soft: #e8f5f2;
+      --blue: #2563eb;
+      --blue-soft: #edf3ff;
+      --amber: #b45309;
+      --amber-soft: #fff6e8;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --slate-soft: #eef2f5;
+      --shadow: 0 1px 2px rgba(16, 42, 51, .05), 0 8px 24px rgba(16, 42, 51, .04);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); }
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 232px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 16px 18px;
+      background: var(--navy);
+      color: #e8f1f2;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 8px; }
+    .brand-mark {
+      width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center;
+      background: #f0b35a; color: var(--navy); box-shadow: inset 0 -8px 16px rgba(0,0,0,.08);
+    }
+    .brand-mark svg { width: 20px; height: 20px; stroke-width: 2.2; }
+    .brand-name { font-size: 17px; font-weight: 700; letter-spacing: .2px; }
+    .brand-sub { font-size: 11px; color: #99b3b8; margin-top: 3px; }
+
+    .nav-label { padding: 0 10px 7px; font-size: 10px; color: #7e9ca3; letter-spacing: 1.4px; }
+    .nav { display: flex; flex-direction: column; gap: 4px; }
+    .nav button {
+      width: 100%; border: 0; background: transparent; color: #bfd0d3; border-radius: 7px;
+      padding: 10px 11px; display: flex; align-items: center; gap: 10px; text-align: left;
+      transition: background .15s, color .15s;
+    }
+    .nav button svg { width: 18px; height: 18px; stroke-width: 1.8; flex: 0 0 auto; }
+    .nav button:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .nav button.active { background: rgba(255,255,255,.11); color: #fff; box-shadow: inset 3px 0 #f0b35a; }
+    .sidebar-spacer { flex: 1; }
+    .side-card { padding: 14px 13px; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; background: rgba(255,255,255,.04); }
+    .side-card-title { font-size: 12px; font-weight: 700; color: #e7f0f1; }
+    .side-card-text { font-size: 11px; color: #93adb2; line-height: 1.65; margin: 7px 0 11px; }
+    .side-link { font-size: 11px; color: #f0b35a; display: flex; align-items: center; gap: 6px; }
+    .side-link svg { width: 14px; height: 14px; }
+
+    .main { min-width: 0; }
+    .topbar {
+      height: 72px; padding: 0 28px; background: rgba(255,255,255,.92);
+      border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 18px;
+      position: sticky; top: 0; z-index: 20; backdrop-filter: blur(12px);
+    }
+    .crumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .crumb strong { color: var(--ink); font-size: 13px; }
+    .top-search {
+      flex: 1; max-width: 460px; margin-left: auto; position: relative;
+    }
+    .top-search input {
+      width: 100%; height: 38px; border: 1px solid var(--line); border-radius: 7px;
+      padding: 0 14px 0 38px; background: #f8fafb; outline: none;
+    }
+    .top-search input:focus { border-color: var(--teal); background: #fff; box-shadow: 0 0 0 3px rgba(12,124,116,.09); }
+    .top-search svg { position: absolute; left: 13px; top: 10px; width: 18px; height: 18px; color: #87939f; }
+    .icon-btn {
+      width: 38px; height: 38px; border-radius: 7px; border: 1px solid var(--line);
+      background: #fff; display: grid; place-items: center; color: #46515e;
+    }
+    .icon-btn:hover { border-color: #bfc8d1; background: #f9fafb; }
+    .icon-btn svg { width: 18px; height: 18px; }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+      background: #dff0ed; color: #075e58; font-weight: 700; font-size: 13px;
+    }
+
+    .content { padding: 26px 28px 34px; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .page-head { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 22px; }
+    .page-head h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 0; }
+    .page-head p { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .head-actions { margin-left: auto; display: flex; gap: 9px; align-items: center; }
+    .btn {
+      border: 1px solid var(--line); background: #fff; border-radius: 7px; min-height: 36px;
+      padding: 0 13px; display: inline-flex; align-items: center; gap: 7px; color: #344054;
+      font-weight: 600;
+    }
+    .btn svg { width: 16px; height: 16px; }
+    .btn:hover { border-color: #b8c2cc; }
+    .btn.primary { border-color: var(--teal); background: var(--teal); color: #fff; }
+    .btn.primary:hover { background: #096b65; border-color: #096b65; }
+    .btn.ghost { background: transparent; }
+    .btn.small { min-height: 30px; padding: 0 10px; font-size: 12px; }
+
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 16px; }
+    .metric {
+      min-height: 112px; padding: 17px 17px 15px; background: var(--panel); border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .metric-top { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
+    .metric-icon { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; background: var(--slate-soft); color: #46515e; }
+    .metric-icon svg { width: 16px; height: 16px; }
+    .metric-value { margin-top: 12px; font-size: 27px; line-height: 1; font-weight: 700; letter-spacing: -.4px; }
+    .metric-foot { margin-top: 9px; font-size: 11px; color: var(--muted); }
+    .up { color: var(--teal); font-weight: 700; }
+    .warn { color: var(--amber); font-weight: 700; }
+
+    .grid-main { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(310px, .85fr); gap: 16px; align-items: start; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .panel-head { padding: 15px 16px 12px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #edf0f3; }
+    .panel-title { font-size: 14px; font-weight: 700; }
+    .panel-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .panel-head .head-actions { gap: 6px; }
+    .panel-body { padding: 14px 16px; }
+    .list { display: flex; flex-direction: column; }
+    .list-row {
+      display: grid; grid-template-columns: 34px minmax(170px, 1.2fr) minmax(160px, 1fr) 92px 72px;
+      gap: 10px; align-items: center; padding: 12px 0; border-bottom: 1px solid #edf0f3;
+    }
+    .list-row:last-child { border-bottom: 0; }
+    .company-mark {
+      width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center;
+      background: #eef4f5; color: #31545b; font-size: 11px; font-weight: 800;
+    }
+    .company-name { font-weight: 700; font-size: 13px; }
+    .company-contact { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .next-action { font-size: 12px; color: #3e4b57; line-height: 1.45; }
+    .next-time { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 8px;
+      font-size: 11px; font-weight: 700; white-space: nowrap; border: 1px solid transparent;
+    }
+    .chip.teal { background: var(--teal-soft); color: #08716a; border-color: #c7e8e3; }
+    .chip.blue { background: var(--blue-soft); color: #1d4ed8; border-color: #d7e4ff; }
+    .chip.amber { background: var(--amber-soft); color: #9a4c08; border-color: #f4dfbd; }
+    .chip.red { background: var(--red-soft); color: var(--red); border-color: #f1d1cc; }
+    .chip.slate { background: var(--slate-soft); color: #52606d; border-color: #e0e5ea; }
+    .text-link { border: 0; padding: 0; background: transparent; color: var(--blue); font-size: 12px; font-weight: 700; }
+
+    .pipeline-mini { display: flex; flex-direction: column; gap: 12px; padding-top: 2px; }
+    .stage-line { display: grid; grid-template-columns: 62px 1fr 32px; gap: 10px; align-items: center; font-size: 12px; color: #53606d; }
+    .bar { height: 8px; background: #edf1f4; border-radius: 999px; overflow: hidden; }
+    .bar span { display: block; height: 100%; border-radius: inherit; background: var(--teal); }
+    .bar span.blue { background: var(--blue); }
+    .bar span.amber { background: #d9912f; }
+    .bar span.slate { background: #8b9ba8; }
+    .divider { height: 1px; background: #edf0f3; margin: 13px 0; }
+    .insight-row { display: grid; grid-template-columns: 12px 1fr auto; gap: 9px; align-items: center; padding: 8px 0; font-size: 12px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+    .insight-row .muted { color: var(--muted); font-size: 11px; }
+
+    .bottom-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; margin-top: 16px; }
+    .voc-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .voc { padding: 7px 9px; border-radius: 6px; background: #f7f9fa; border: 1px solid #e4e9ed; font-size: 12px; color: #3f4d58; }
+    .voc strong { color: #1e2a34; }
+    .bar-list { display: flex; flex-direction: column; gap: 11px; }
+    .bar-list-row { display: grid; grid-template-columns: 72px 1fr 36px; gap: 10px; align-items: center; font-size: 12px; }
+
+    .toolbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; padding: 13px 16px; border-bottom: 1px solid #edf0f3; }
+    .toolbar .search { flex: 1; min-width: 220px; position: relative; }
+    .toolbar .search input { width: 100%; height: 34px; border: 1px solid var(--line); border-radius: 7px; padding: 0 12px 0 34px; background: #fafbfc; }
+    .toolbar .search svg { position: absolute; left: 10px; top: 8px; width: 17px; height: 17px; color: #87939f; }
+    .select-btn { height: 34px; border: 1px solid var(--line); background: #fff; border-radius: 7px; padding: 0 10px; display: inline-flex; align-items: center; gap: 6px; color: #475467; font-size: 12px; }
+    .select-btn svg { width: 14px; height: 14px; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { text-align: left; font-size: 11px; color: #7b8794; font-weight: 600; padding: 10px 12px; background: #fafbfc; border-bottom: 1px solid #e7ebef; white-space: nowrap; }
+    .data-table td { padding: 12px; border-bottom: 1px solid #edf0f3; font-size: 12px; vertical-align: middle; }
+    .data-table tr { cursor: pointer; }
+    .data-table tbody tr:hover td { background: #fbfcfd; }
+    .table-company { display: flex; align-items: center; gap: 10px; min-width: 160px; }
+    .table-company strong { font-size: 13px; }
+    .table-company small { display: block; color: var(--muted); margin-top: 3px; font-size: 10px; }
+    .score { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; }
+    .score i { display: block; width: 34px; height: 4px; background: #e8edf0; border-radius: 99px; overflow: hidden; }
+    .score i span { display: block; height: 100%; background: var(--teal); }
+
+    .detail-top { display: flex; align-items: flex-start; gap: 14px; padding: 17px; border-bottom: 1px solid #e9edf0; }
+    .back-btn { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: #52606d; }
+    .back-btn svg { width: 17px; height: 17px; }
+    .company-avatar { width: 44px; height: 44px; border-radius: 9px; display: grid; place-items: center; background: var(--navy-2); color: white; font-size: 15px; font-weight: 800; }
+    .detail-title { font-size: 19px; font-weight: 700; margin: 0; }
+    .detail-meta { margin-top: 6px; color: var(--muted); font-size: 11px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .detail-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, .72fr); gap: 0; }
+    .detail-main { padding: 0 17px 18px; }
+    .tabs { display: flex; gap: 22px; border-bottom: 1px solid #e9edf0; margin-bottom: 16px; }
+    .tabs button { border: 0; border-bottom: 2px solid transparent; background: transparent; padding: 14px 0 10px; font-size: 12px; color: var(--muted); font-weight: 700; }
+    .tabs button.active { color: var(--teal); border-bottom-color: var(--teal); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .timeline { position: relative; padding-left: 22px; }
+    .timeline::before { content: ""; position: absolute; left: 6px; top: 5px; bottom: 5px; width: 1px; background: #dfe5ea; }
+    .timeline-item { position: relative; margin-bottom: 18px; }
+    .timeline-item::before { content: ""; position: absolute; left: -21px; top: 3px; width: 9px; height: 9px; border: 2px solid #fff; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 1px #b9ded9; }
+    .timeline-date { font-size: 10px; color: var(--muted); margin-bottom: 5px; }
+    .timeline-title { font-size: 12px; font-weight: 700; }
+    .timeline-text { margin-top: 5px; font-size: 12px; line-height: 1.65; color: #53606d; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 7px; margin: 6px 0 0; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .info-block { border: 1px solid #e6ebee; border-radius: 7px; padding: 11px; background: #fbfcfd; }
+    .info-block small { display: block; color: var(--muted); font-size: 10px; margin-bottom: 5px; }
+    .info-block strong { font-size: 12px; }
+    .side-detail { border-left: 1px solid #e9edf0; padding: 17px; background: #fbfcfd; }
+    .side-title { font-size: 12px; color: #53606d; font-weight: 700; margin-bottom: 10px; }
+    .next-card { background: var(--amber-soft); border: 1px solid #f3dfbe; border-radius: 7px; padding: 12px; margin-bottom: 16px; }
+    .next-card .next-title { font-size: 12px; font-weight: 700; color: #874609; }
+    .next-card p { margin: 6px 0 0; font-size: 11px; line-height: 1.6; color: #83531f; }
+    .summary-box { background: #fff; border: 1px solid #e0e6ea; border-radius: 7px; padding: 11px; font-size: 11px; line-height: 1.65; color: #56636f; }
+    .summary-box strong { color: var(--ink); }
+    .side-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+    .side-actions .btn { justify-content: center; }
+
+    .kanban { display: grid; grid-template-columns: repeat(5, minmax(190px, 1fr)); gap: 12px; align-items: start; }
+    .kanban-col { background: #eef2f4; border: 1px solid #e1e7eb; border-radius: 8px; padding: 10px; min-height: 320px; }
+    .kanban-head { display: flex; align-items: center; gap: 7px; padding: 2px 2px 11px; font-size: 12px; font-weight: 700; }
+    .kanban-head .count { margin-left: auto; background: #fff; border: 1px solid #dfe5e9; border-radius: 999px; padding: 1px 7px; color: var(--muted); font-size: 10px; }
+    .kanban-card { background: #fff; border: 1px solid #dfe6ea; border-radius: 7px; padding: 11px; margin-bottom: 9px; box-shadow: 0 2px 8px rgba(16,42,51,.03); cursor: pointer; }
+    .kanban-card:hover { border-color: #b8c8ca; transform: translateY(-1px); }
+    .kanban-card h4 { margin: 0; font-size: 12px; }
+    .kanban-card p { margin: 6px 0 0; font-size: 10px; color: var(--muted); line-height: 1.55; }
+    .kanban-foot { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+    .kanban-foot .chip { padding: 3px 6px; font-size: 9px; }
+    .kanban-foot .amount { margin-left: auto; font-size: 10px; font-weight: 700; color: #3e4b57; }
+
+    .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .insight-chart { padding: 16px; }
+    .chart-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+    .chart-head h3 { font-size: 14px; margin: 0; }
+    .chart-head p { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
+    .donut-wrap { display: grid; grid-template-columns: 132px 1fr; gap: 18px; align-items: center; }
+    .donut { width: 132px; height: 132px; border-radius: 50%; position: relative; background: conic-gradient(var(--teal) 0 36%, #d97706 36% 62%, #2563eb 62% 82%, #9aa7b1 82% 100%); }
+    .donut::after { content: ""; position: absolute; inset: 24px; border-radius: 50%; background: #fff; }
+    .donut-center { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; z-index: 1; }
+    .donut-center strong { display: block; font-size: 22px; }
+    .donut-center span { font-size: 10px; color: var(--muted); }
+    .legend { display: flex; flex-direction: column; gap: 9px; }
+    .legend-row { display: grid; grid-template-columns: 9px 1fr auto; gap: 7px; align-items: center; font-size: 11px; color: #53606d; }
+    .legend-row i { width: 8px; height: 8px; border-radius: 2px; background: var(--teal); }
+    .quote-stack { display: flex; flex-direction: column; gap: 10px; }
+    .quote { border-left: 3px solid #b7dfd9; padding: 3px 0 3px 11px; }
+    .quote p { margin: 0; font-size: 12px; line-height: 1.65; color: #45525d; }
+    .quote span { display: block; margin-top: 5px; font-size: 10px; color: var(--muted); }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(16,42,51,.38); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-backdrop.open { display: flex; }
+    .modal { width: min(560px, 100%); background: #fff; border-radius: 9px; box-shadow: 0 22px 70px rgba(16,42,51,.2); overflow: hidden; }
+    .modal-head { padding: 16px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #e8edf0; }
+    .modal-head h3 { font-size: 16px; margin: 0; }
+    .modal-head .icon-btn { margin-left: auto; width: 30px; height: 30px; }
+    .modal-body { padding: 17px 18px 18px; }
+    .form-row { margin-bottom: 13px; }
+    .form-row label { display: block; font-size: 11px; color: #53606d; font-weight: 700; margin-bottom: 6px; }
+    .form-row input, .form-row select, .form-row textarea { width: 100%; border: 1px solid #d8dee5; border-radius: 6px; padding: 9px 10px; outline: none; background: #fff; }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(12,124,116,.08); }
+    .form-row textarea { min-height: 92px; resize: vertical; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-foot { padding: 13px 18px; border-top: 1px solid #e8edf0; display: flex; justify-content: flex-end; gap: 8px; background: #fbfcfd; }
+    .toast { position: fixed; right: 24px; bottom: 24px; background: var(--navy); color: #fff; border-radius: 7px; padding: 11px 14px; font-size: 12px; box-shadow: 0 12px 30px rgba(16,42,51,.2); opacity: 0; transform: translateY(8px); pointer-events: none; transition: .2s; z-index: 120; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .hidden { display: none !important; }
+    .muted { color: var(--muted); }
+    .templates { display: none; }
+
+    @media (max-width: 1100px) {
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-main, .bottom-grid, .insight-grid, .detail-layout { grid-template-columns: 1fr; }
+      .side-detail { border-left: 0; border-top: 1px solid #e9edf0; }
+      .kanban { overflow-x: auto; grid-template-columns: repeat(5, 220px); padding-bottom: 8px; }
+    }
+    @media (max-width: 760px) {
+      .app { grid-template-columns: minmax(0, 1fr); width: 100%; overflow-x: hidden; }
+      .sidebar { position: static; height: auto; padding: 14px; gap: 14px; min-width: 0; width: 100%; overflow: hidden; }
+      .brand, .sidebar > div { min-width: 0; max-width: 100%; }
+      .nav { flex-direction: row; overflow-x: auto; width: 100%; max-width: calc(100vw - 28px); min-width: 0; }
+      .nav button { width: auto; white-space: nowrap; }
+      .nav-label, .sidebar-spacer, .side-card { display: none; }
+      .main { min-width: 0; width: 100%; }
+      .topbar { height: auto; min-height: 64px; padding: 12px 15px; flex-wrap: wrap; }
+      .top-search { order: 3; flex-basis: 100%; max-width: none; }
+      .content { padding: 18px 15px 28px; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .list-row { grid-template-columns: 30px 1fr 82px; }
+      .list-row .next-action, .list-row .next-time, .list-row .text-link { display: none; }
+      .detail-top { flex-wrap: wrap; }
+      .info-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .page-head { flex-direction: column; }
+      .head-actions { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><i data-lucide="radar"></i></div>
+        <div>
+          <div class="brand-name">客户罗盘</div>
+          <div class="brand-sub">客户跟进与需求洞察工作台</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">WORKSPACE</div>
+        <nav class="nav">
+          <button class="active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>今日工作台</span></button>
+          <button data-view="customers"><i data-lucide="users"></i><span>客户档案</span></button>
+          <button data-view="pipeline"><i data-lucide="columns-3"></i><span>销售管道</span></button>
+          <button data-view="insights"><i data-lucide="message-square-text"></i><span>需求洞察</span></button>
+          <button data-view="report"><i data-lucide="chart-no-axes-combined"></i><span>复盘报告</span></button>
+        </nav>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+      <div class="side-card">
+        <div class="side-card-title">作品集演示</div>
+        <div class="side-card-text">基于销售一线场景的个人产品概念。数据均已脱敏，仅用于作品展示。</div>
+        <a class="side-link" href="../PRD_客户跟进与需求洞察工作台.pdf" target="_blank"><i data-lucide="file-text"></i><span>打开 PRD</span></a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="crumb"><span>销售中心</span><i data-lucide="chevron-right"></i><strong id="crumbCurrent">今日工作台</strong></div>
+        <div class="top-search">
+          <i data-lucide="search"></i>
+          <input id="globalSearch" type="search" placeholder="搜索客户、联系人、标签">
+        </div>
+        <button class="icon-btn" title="通知"><i data-lucide="bell"></i></button>
+        <button class="icon-btn" title="帮助"><i data-lucide="circle-help"></i></button>
+        <div class="avatar">刘</div>
+      </header>
+
+      <div class="content">
+        <section id="view-dashboard" class="view active">
+          <div class="page-head">
+            <div>
+              <h1>早上好，刘嘉贤</h1>
+              <p>今天有 6 个客户需要跟进。先处理高意向、长时间未联系的客户。</p>
+            </div>
+            <div class="head-actions">
+              <button class="btn" data-toast="已导出今日跟进清单"><i data-lucide="download"></i>导出清单</button>
+              <button class="btn primary" data-open-modal><i data-lucide="plus"></i>新增跟进</button>
+            </div>
+          </div>
+
+          <div class="metrics">
+            <div class="metric">
+              <div class="metric-top"><span>待跟进客户</span><span class="metric-icon"><i data-lucide="clock-3"></i></span></div>
+              <div class="metric-value">18</div>
+              <div class="metric-foot"><span class="warn">6 个今日到期</span> · 较昨日减少 2</div>
+            </div>
+            <div class="metric">
+              <div class="metric-top"><span>需求完整率</span><span class="metric-icon"><i data-lucide="badge-check"></i></span></div>
+              <div class="metric-value">78%</div>
+              <div class="metric-foot"><span class="up">+9.4%</span> 本月录入质量提升</div>
+            </div>
+            <div class="metric">
+              <div class="metric-top"><span>高意向客户</span><span class="metric-icon"><i data-lucide="flame"></i></span></div>
+              <div class="metric-value">12</div>
+              <div class="metric-foot">其中 4 个已进入方案阶段</div>
+            </div>
+            <div class="metric">
+              <div class="metric-top"><span>平均响应时长</span><span class="metric-icon"><i data-lucide="timer"></i></span></div>
+              <div class="metric-value">3.8h</div>
+              <div class="metric-foot"><span class="up">缩短 18%</span> 较上月</div>
+            </div>
+          </div>
+
+          <div class="grid-main">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">优先跟进</div>
+                  <div class="panel-sub">按意向度、跟进到期时间和最近联系综合排序</div>
+                </div>
+                <div class="head-actions"><button class="text-link" data-view-jump="customers">查看全部</button></div>
+              </div>
+              <div class="panel-body">
+                <div class="list">
+                  <div class="list-row customer-row" data-customer="海岳智造">
+                    <div class="company-mark">海岳</div>
+                    <div><div class="company-name">海岳智造</div><div class="company-contact">陈经理 · 采购负责人</div></div>
+                    <div><div class="next-action">确认部署范围与交付周期</div><div class="next-time">今天 10:30 · 已逾期</div></div>
+                    <div><span class="chip amber">需求确认</span></div>
+                    <button class="text-link" data-customer="海岳智造">查看</button>
+                  </div>
+                  <div class="list-row customer-row" data-customer="远川供应链">
+                    <div class="company-mark">远川</div>
+                    <div><div class="company-name">远川供应链</div><div class="company-contact">赵总 · 业务负责人</div></div>
+                    <div><div class="next-action">发送报价与实施排期</div><div class="next-time">今天 14:00</div></div>
+                    <div><span class="chip teal">方案报价</span></div>
+                    <button class="text-link" data-customer="远川供应链">查看</button>
+                  </div>
+                  <div class="list-row customer-row" data-customer="云栖教育">
+                    <div class="company-mark">云栖</div>
+                    <div><div class="company-name">云栖教育</div><div class="company-contact">李老师 · 信息中心</div></div>
+                    <div><div class="next-action">回访试用反馈与权限问题</div><div class="next-time">明天 09:30</div></div>
+                    <div><span class="chip blue">试用中</span></div>
+                    <button class="text-link" data-customer="云栖教育">查看</button>
+                  </div>
+                  <div class="list-row customer-row" data-customer="星野零售">
+                    <div class="company-mark">星野</div>
+                    <div><div class="company-name">星野零售</div><div class="company-contact">周经理 · 运营负责人</div></div>
+                    <div><div class="next-action">补充多门店协同案例</div><div class="next-time">明天 15:00</div></div>
+                    <div><span class="chip slate">初次沟通</span></div>
+                    <button class="text-link" data-customer="星野零售">查看</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head"><div><div class="panel-title">销售管道概览</div><div class="panel-sub">本周新增 7 个商机</div></div><button class="text-link" data-view-jump="pipeline">打开看板</button></div>
+              <div class="panel-body">
+                <div class="pipeline-mini">
+                  <div class="stage-line"><span>线索</span><div class="bar"><span class="slate" style="width:74%"></span></div><span>32</span></div>
+                  <div class="stage-line"><span>初联</span><div class="bar"><span class="blue" style="width:54%"></span></div><span>23</span></div>
+                  <div class="stage-line"><span>需求确认</span><div class="bar"><span class="amber" style="width:39%"></span></div><span>17</span></div>
+                  <div class="stage-line"><span>方案报价</span><div class="bar"><span style="width:26%"></span></div><span>11</span></div>
+                  <div class="stage-line"><span>赢单</span><div class="bar"><span style="width:15%"></span></div><span>6</span></div>
+                </div>
+                <div class="divider"></div>
+                <div class="panel-sub" style="margin-bottom: 6px;">本周需要注意</div>
+                <div class="insight-row"><span class="dot"></span><span>8 个商机超过 7 天未更新</span><span class="muted">待处理</span></div>
+                <div class="insight-row"><span class="dot" style="background:#d9912f"></span><span>价格异议集中出现在方案阶段</span><span class="muted">高频</span></div>
+                <div class="insight-row"><span class="dot" style="background:#2563eb"></span><span>“实施周期”成为新增关注点</span><span class="muted">上升</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-grid">
+            <div class="panel">
+              <div class="panel-head"><div><div class="panel-title">近期客户声音</div><div class="panel-sub">从跟进记录中自动归类的需求信号</div></div><button class="text-link" data-view-jump="insights">查看洞察</button></div>
+              <div class="panel-body voc-wrap">
+                <span class="voc"><strong>价格</strong> · 预算审批周期长</span>
+                <span class="voc"><strong>交付</strong> · 希望两周内上线</span>
+                <span class="voc"><strong>权限</strong> · 多角色分级管理</span>
+                <span class="voc"><strong>集成</strong> · 需对接现有 CRM</span>
+                <span class="voc"><strong>服务</strong> · 培训与运营支持</span>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><div><div class="panel-title">跟进质量</div><div class="panel-sub">本月记录完整度</div></div><span class="chip teal">目标 80%</span></div>
+              <div class="panel-body bar-list">
+                <div class="bar-list-row"><span>需求摘要</span><div class="bar"><span style="width:82%"></span></div><strong>82%</strong></div>
+                <div class="bar-list-row"><span>决策角色</span><div class="bar"><span class="blue" style="width:67%"></span></div><strong>67%</strong></div>
+                <div class="bar-list-row"><span>下一步</span><div class="bar"><span class="amber" style="width:91%"></span></div><strong>91%</strong></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-customers" class="view">
+          <div class="page-head">
+            <div><h1>客户档案</h1><p>把客户信息、需求、异议和下一步动作放在同一条时间线上。</p></div>
+            <div class="head-actions">
+              <button class="btn" data-toast="筛选器已打开"><i data-lucide="sliders-horizontal"></i>筛选</button>
+              <button class="btn primary" data-open-modal><i data-lucide="user-plus"></i>新增客户</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="toolbar">
+              <div class="search"><i data-lucide="search"></i><input id="customerSearch" placeholder="搜索客户名称、联系人"></div>
+              <button class="select-btn">全部阶段 <i data-lucide="chevron-down"></i></button>
+              <button class="select-btn">全部来源 <i data-lucide="chevron-down"></i></button>
+              <button class="select-btn">最近联系 <i data-lucide="chevron-down"></i></button>
+            </div>
+            <table class="data-table">
+              <thead><tr><th>客户</th><th>联系人</th><th>阶段</th><th>需求信号</th><th>最近联系</th><th>意向分</th></tr></thead>
+              <tbody id="customerTableBody">
+                <tr class="customer-row" data-customer="海岳智造"><td><div class="table-company"><span class="company-mark">海岳</span><span><strong>海岳智造</strong><small>制造业 · 200-500 人</small></span></div></td><td>陈经理<br><span class="muted">采购负责人</span></td><td><span class="chip amber">需求确认</span></td><td><span class="tag-list"><span class="chip slate">私有化</span><span class="chip slate">交付周期</span></span></td><td>昨天 16:40</td><td><span class="score">82<i><span style="width:82%"></span></i></span></td></tr>
+                <tr class="customer-row" data-customer="远川供应链"><td><div class="table-company"><span class="company-mark">远川</span><span><strong>远川供应链</strong><small>物流服务 · 100-200 人</small></span></div></td><td>赵总<br><span class="muted">业务负责人</span></td><td><span class="chip teal">方案报价</span></td><td><span class="tag-list"><span class="chip slate">预算审批</span><span class="chip slate">CRM 集成</span></span></td><td>今天 09:10</td><td><span class="score">88<i><span style="width:88%"></span></i></span></td></tr>
+                <tr class="customer-row" data-customer="云栖教育"><td><div class="table-company"><span class="company-mark">云栖</span><span><strong>云栖教育</strong><small>教育服务 · 50-100 人</small></span></div></td><td>李老师<br><span class="muted">信息中心</span></td><td><span class="chip blue">试用中</span></td><td><span class="tag-list"><span class="chip slate">权限管理</span><span class="chip slate">培训</span></span></td><td>昨天 11:25</td><td><span class="score">74<i><span style="width:74%"></span></i></span></td></tr>
+                <tr class="customer-row" data-customer="星野零售"><td><div class="table-company"><span class="company-mark">星野</span><span><strong>星野零售</strong><small>零售连锁 · 500+ 人</small></span></div></td><td>周经理<br><span class="muted">运营负责人</span></td><td><span class="chip slate">初次沟通</span></td><td><span class="tag-list"><span class="chip slate">多门店</span><span class="chip slate">协同</span></span></td><td>周一 15:30</td><td><span class="score">61<i><span style="width:61%"></span></i></span></td></tr>
+                <tr class="customer-row" data-customer="北辰医疗"><td><div class="table-company"><span class="company-mark">北辰</span><span><strong>北辰医疗</strong><small>医疗服务 · 100-200 人</small></span></div></td><td>王主管<br><span class="muted">信息科</span></td><td><span class="chip amber">需求确认</span></td><td><span class="tag-list"><span class="chip slate">合规</span><span class="chip slate">审计</span></span></td><td>10 月 28 日</td><td><span class="score">79<i><span style="width:79%"></span></i></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="view-detail" class="view">
+          <div class="panel">
+            <div class="detail-top">
+              <button class="back-btn" data-view-jump="customers"><i data-lucide="arrow-left"></i></button>
+              <div class="company-avatar">海岳</div>
+              <div>
+                <h2 class="detail-title" id="detailCompany">海岳智造</h2>
+                <div class="detail-meta"><span>制造业 · 200-500 人</span><span>来源：转介绍</span><span>负责人：刘嘉贤</span><span>最近联系：昨天 16:40</span></div>
+              </div>
+              <div class="head-actions">
+                <span class="chip amber">需求确认</span>
+                <span class="score">82<i><span style="width:82%"></span></i></span>
+                <button class="btn" data-toast="已加入重点客户"><i data-lucide="star"></i>重点</button>
+                <button class="btn primary" data-open-modal><i data-lucide="plus"></i>新增跟进</button>
+              </div>
+            </div>
+            <div class="detail-layout">
+              <div class="detail-main">
+                <div class="tabs">
+                  <button class="active" data-tab="timeline">跟进时间线</button>
+                  <button data-tab="needs">需求画像</button>
+                  <button data-tab="deal">商机与报价</button>
+                  <button data-tab="team">协同记录</button>
+                </div>
+                <div id="tab-timeline" class="tab-panel active">
+                  <div class="timeline">
+                    <div class="timeline-item"><div class="timeline-date">昨天 16:40 · 电话沟通</div><div class="timeline-title">确认部署范围与交付周期</div><div class="timeline-text">客户希望先在一个事业部试点，重点关注权限隔离、历史数据导入和两周内上线可行性。</div><div class="tag-list"><span class="chip slate">私有化部署</span><span class="chip slate">权限隔离</span><span class="chip amber">交付周期</span></div></div>
+                    <div class="timeline-item"><div class="timeline-date">10 月 28 日 · 线上演示</div><div class="timeline-title">完成首轮产品演示</div><div class="timeline-text">采购、IT、业务三方参加。IT 关注接口与数据安全，业务关注一线销售是否愿意持续录入。</div><div class="tag-list"><span class="chip slate">多角色决策</span><span class="chip slate">接口</span></div></div>
+                    <div class="timeline-item"><div class="timeline-date">10 月 24 日 · 初次沟通</div><div class="timeline-title">识别需求与现有流程痛点</div><div class="timeline-text">客户目前用 Excel 和聊天记录管理商机，跟进信息分散，管理层无法判断哪些商机需要支持。</div></div>
+                  </div>
+                </div>
+                <div id="tab-needs" class="tab-panel">
+                  <div class="info-grid">
+                    <div class="info-block"><small>业务目标</small><strong>提升商机透明度</strong></div>
+                    <div class="info-block"><small>核心场景</small><strong>销售跟进与复盘</strong></div>
+                    <div class="info-block"><small>关键角色</small><strong>采购 / IT / 业务负责人</strong></div>
+                    <div class="info-block"><small>主要异议</small><strong>数据迁移与一线录入负担</strong></div>
+                  </div>
+                  <div style="margin-top:14px" class="tag-list"><span class="chip teal">高意向</span><span class="chip amber">交付周期敏感</span><span class="chip blue">多角色决策</span><span class="chip slate">私有化</span><span class="chip slate">数据安全</span></div>
+                </div>
+                <div id="tab-deal" class="tab-panel"><div class="info-grid"><div class="info-block"><small>预计金额</small><strong>￥180,000</strong></div><div class="info-block"><small>赢单概率</small><strong>62%</strong></div><div class="info-block"><small>预计成交</small><strong>2026-11-28</strong></div><div class="info-block"><small>当前阻塞</small><strong>交付范围待确认</strong></div></div></div>
+                <div id="tab-team" class="tab-panel"><div class="timeline"><div class="timeline-item"><div class="timeline-date">今天 09:05 · 产品协同</div><div class="timeline-title">提交数据导入需求</div><div class="timeline-text">产品团队已确认 V1 支持 Excel 模板导入，字段映射与异常校验进入需求池。</div></div><div class="timeline-item"><div class="timeline-date">10 月 29 日 · 售前协同</div><div class="timeline-title">补充私有化部署说明</div><div class="timeline-text">售前已提供部署拓扑与安全说明，待销售同步客户 IT。</div></div></div></div>
+              </div>
+              <aside class="side-detail">
+                <div class="side-title">下一步行动</div>
+                <div class="next-card"><div class="next-title">今天 10:30 · 确认部署范围</div><p>准备《试点范围确认单》和两周实施排期，重点回应历史数据导入。</p></div>
+                <div class="side-title">客户需求摘要</div>
+                <div class="summary-box" id="summaryBox"><strong>当前需求：</strong>先在单一事业部试点，需要私有化部署、角色权限和数据导入能力；客户对交付周期敏感。<br><br><strong>建议动作：</strong>先确认试点边界，再提供分阶段上线计划。</div>
+                <button class="btn small" id="generateSummary" style="margin-top:9px;width:100%;justify-content:center"><i data-lucide="sparkles"></i>生成需求摘要</button>
+                <div class="side-actions">
+                  <button class="btn" data-toast="跟进提醒已设置"><i data-lucide="bell-ring"></i>设置提醒</button>
+                  <button class="btn" data-toast="已复制客户摘要"><i data-lucide="copy"></i>复制摘要</button>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-pipeline" class="view">
+          <div class="page-head">
+            <div><h1>销售管道</h1><p>按阶段查看商机健康度，优先处理停滞和临近成交的客户。</p></div>
+            <div class="head-actions"><button class="btn"><i data-lucide="filter"></i>按负责人筛选</button><button class="btn primary" data-open-modal><i data-lucide="plus"></i>新建商机</button></div>
+          </div>
+          <div class="metrics" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+            <div class="metric"><div class="metric-top"><span>商机总额</span><span class="metric-icon"><i data-lucide="wallet-cards"></i></span></div><div class="metric-value">¥ 1.26M</div><div class="metric-foot">覆盖 32 个活跃商机</div></div>
+            <div class="metric"><div class="metric-top"><span>加权商机</span><span class="metric-icon"><i data-lucide="trending-up"></i></span></div><div class="metric-value">¥ 642K</div><div class="metric-foot"><span class="up">+11.2%</span> 较上月</div></div>
+            <div class="metric"><div class="metric-top"><span>停滞商机</span><span class="metric-icon"><i data-lucide="circle-alert"></i></span></div><div class="metric-value">8</div><div class="metric-foot"><span class="warn">需关注</span> 超过 7 天未更新</div></div>
+          </div>
+          <div class="kanban">
+            <div class="kanban-col">
+              <div class="kanban-head"><i data-lucide="dot"></i>线索<span class="count">8</span></div>
+              <div class="kanban-card customer-row" data-customer="星野零售"><h4>星野零售</h4><p>多门店协同需求，待确认业务负责人。</p><div class="kanban-foot"><span class="chip slate">高潜</span><span class="amount">¥80K</span></div></div>
+              <div class="kanban-card"><h4>南竹科技</h4><p>官网咨询进入，关注数据安全。</p><div class="kanban-foot"><span class="chip slate">新线索</span><span class="amount">¥55K</span></div></div>
+            </div>
+            <div class="kanban-col">
+              <div class="kanban-head"><i data-lucide="dot" style="color:#2563eb"></i>初联<span class="count">6</span></div>
+              <div class="kanban-card"><h4>德睿咨询</h4><p>已完成首轮沟通，等待补充案例。</p><div class="kanban-foot"><span class="chip blue">待回访</span><span class="amount">¥96K</span></div></div>
+              <div class="kanban-card"><h4>锦程物流</h4><p>关注报价区间与实施资源。</p><div class="kanban-foot"><span class="chip amber">明日到期</span><span class="amount">¥120K</span></div></div>
+            </div>
+            <div class="kanban-col">
+              <div class="kanban-head"><i data-lucide="dot" style="color:#b45309"></i>需求确认<span class="count">5</span></div>
+              <div class="kanban-card customer-row" data-customer="海岳智造"><h4>海岳智造</h4><p>试点范围、权限隔离、数据导入。</p><div class="kanban-foot"><span class="chip amber">高意向</span><span class="amount">¥180K</span></div></div>
+              <div class="kanban-card customer-row" data-customer="北辰医疗"><h4>北辰医疗</h4><p>合规与审计要求待确认。</p><div class="kanban-foot"><span class="chip blue">多角色</span><span class="amount">¥210K</span></div></div>
+            </div>
+            <div class="kanban-col">
+              <div class="kanban-head"><i data-lucide="dot" style="color:#0c7c74"></i>方案报价<span class="count">4</span></div>
+              <div class="kanban-card customer-row" data-customer="远川供应链"><h4>远川供应链</h4><p>已发送报价，等待预算审批。</p><div class="kanban-foot"><span class="chip teal">88 分</span><span class="amount">¥260K</span></div></div>
+            </div>
+            <div class="kanban-col">
+              <div class="kanban-head"><i data-lucide="dot" style="color:#475467"></i>赢单<span class="count">3</span></div>
+              <div class="kanban-card"><h4>知行制造</h4><p>已签约，待启动实施。</p><div class="kanban-foot"><span class="chip teal">已成交</span><span class="amount">¥150K</span></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-insights" class="view">
+          <div class="page-head">
+            <div><h1>需求洞察</h1><p>把销售跟进中的客户声音结构化，反馈给产品、运营和售前。</p></div>
+            <div class="head-actions"><button class="btn"><i data-lucide="calendar-range"></i>近 30 天</button><button class="btn primary" data-toast="洞察周报已生成"><i data-lucide="file-down"></i>生成洞察周报</button></div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="metric-top"><span>本月客户声音</span><span class="metric-icon"><i data-lucide="messages-square"></i></span></div><div class="metric-value">126</div><div class="metric-foot">来自 18 个活跃客户</div></div>
+            <div class="metric"><div class="metric-top"><span>高频需求</span><span class="metric-icon"><i data-lucide="tag"></i></span></div><div class="metric-value">9</div><div class="metric-foot">其中 4 个进入产品需求池</div></div>
+            <div class="metric"><div class="metric-top"><span>待回应异议</span><span class="metric-icon"><i data-lucide="message-circle-warning"></i></span></div><div class="metric-value">7</div><div class="metric-foot"><span class="warn">3 个影响商机推进</span></div></div>
+            <div class="metric"><div class="metric-top"><span>需求完整率</span><span class="metric-icon"><i data-lucide="database"></i></span></div><div class="metric-value">78%</div><div class="metric-foot"><span class="up">连续 3 周提升</span></div></div>
+          </div>
+          <div class="insight-grid">
+            <div class="panel insight-chart">
+              <div class="chart-head"><div><h3>需求主题分布</h3><p>按客户声音标签统计</p></div></div>
+              <div class="donut-wrap">
+                <div class="donut"><div class="donut-center"><strong>126</strong><span>条客户声音</span></div></div>
+                <div class="legend">
+                  <div class="legend-row"><i></i><span>交付与实施</span><strong>36%</strong></div>
+                  <div class="legend-row"><i style="background:#d97706"></i><span>价格与预算</span><strong>26%</strong></div>
+                  <div class="legend-row"><i style="background:#2563eb"></i><span>权限与安全</span><strong>20%</strong></div>
+                  <div class="legend-row"><i style="background:#9aa7b1"></i><span>集成与服务</span><strong>18%</strong></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel insight-chart">
+              <div class="chart-head"><div><h3>本周高优先级信号</h3><p>对商机推进有直接影响</p></div><span class="chip amber">3 项</span></div>
+              <div class="quote-stack">
+                <div class="quote"><p>“希望先在单一事业部试点，系统上线不能超过两周。”</p><span>海岳智造 · 交付周期</span></div>
+                <div class="quote"><p>“老板最关心一线销售会不会真的持续录入。”</p><span>北辰医疗 · 使用意愿</span></div>
+                <div class="quote"><p>“权限要能细分到区域和角色，不能只分管理员和销售。”</p><span>云栖教育 · 权限管理</span></div>
+              </div>
+            </div>
+            <div class="panel insight-chart">
+              <div class="chart-head"><div><h3>阶段分布</h3><p>客户声音随销售阶段变化</p></div></div>
+              <div class="bar-list">
+                <div class="bar-list-row"><span>初次沟通</span><div class="bar"><span class="slate" style="width:84%"></span></div><strong>22</strong></div>
+                <div class="bar-list-row"><span>需求确认</span><div class="bar"><span class="amber" style="width:66%"></span></div><strong>17</strong></div>
+                <div class="bar-list-row"><span>方案报价</span><div class="bar"><span class="blue" style="width:52%"></span></div><strong>13</strong></div>
+                <div class="bar-list-row"><span>交付阶段</span><div class="bar"><span style="width:35%"></span></div><strong>9</strong></div>
+              </div>
+            </div>
+            <div class="panel insight-chart">
+              <div class="chart-head"><div><h3>产品反馈看板</h3><p>待产品确认的高频需求</p></div><button class="text-link">查看全部</button></div>
+              <table class="data-table">
+                <thead><tr><th>需求</th><th>客户数</th><th>影响</th><th>状态</th></tr></thead>
+                <tbody>
+                  <tr><td>Excel 批量导入与字段校验</td><td>7</td><td><span class="chip amber">高</span></td><td><span class="chip blue">评估中</span></td></tr>
+                  <tr><td>角色与区域权限组合</td><td>5</td><td><span class="chip amber">高</span></td><td><span class="chip teal">已排期</span></td></tr>
+                  <tr><td>CRM 双向同步</td><td>4</td><td><span class="chip slate">中</span></td><td><span class="chip slate">待调研</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-report" class="view">
+          <div class="page-head"><div><h1>复盘报告</h1><p>把本周新增、推进、停滞和赢单原因整理成一页经营复盘。</p></div><div class="head-actions"><button class="btn"><i data-lucide="calendar"></i>2026 第 44 周</button><button class="btn primary" data-toast="周报已生成"><i data-lucide="file-down"></i>生成周报</button></div></div>
+          <div class="metrics" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+            <div class="metric"><div class="metric-top"><span>本周新增商机</span><span class="metric-icon"><i data-lucide="layers-3"></i></span></div><div class="metric-value">7</div><div class="metric-foot">较上周 +2</div></div>
+            <div class="metric"><div class="metric-top"><span>推进阶段</span><span class="metric-icon"><i data-lucide="arrow-up-right"></i></span></div><div class="metric-value">11</div><div class="metric-foot">关键节点更新 11 次</div></div>
+            <div class="metric"><div class="metric-top"><span>赢单 / 丢单</span><span class="metric-icon"><i data-lucide="scale"></i></span></div><div class="metric-value">3 / 1</div><div class="metric-foot">赢单率 75%</div></div>
+          </div>
+          <div class="insight-grid">
+            <div class="panel insight-chart"><div class="chart-head"><div><h3>本周结论</h3><p>基于 32 个活跃商机</p></div></div><div class="summary-box"><strong>商机健康度：</strong>进入需求确认后，若能在 48 小时内给出案例资料和下一步安排，推进概率明显更高。<br><br><strong>主要风险：</strong>8 个商机超过 7 天未更新，集中在初次沟通和需求确认阶段。<br><br><strong>建议：</strong>优先回访海岳智造、北辰医疗和锦程物流；产品侧补充数据导入和权限管理说明。</div></div>
+            <div class="panel insight-chart"><div class="chart-head"><div><h3>本周行动</h3><p>按优先级排序</p></div></div><div class="quote-stack"><div class="quote"><p>完成海岳智造试点范围确认，明确两周上线边界。</p><span>高优先级 · 今天</span></div><div class="quote"><p>向产品同步 Excel 导入和角色权限需求。</p><span>产品协同 · 明天</span></div><div class="quote"><p>整理价格异议应答，更新方案沟通话术。</p><span>运营协同 · 本周</span></div></div></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="followModal">
+    <div class="modal">
+      <div class="modal-head"><h3>新增跟进</h3><button class="icon-btn" data-close-modal><i data-lucide="x"></i></button></div>
+      <form id="followForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-row"><label>客户</label><input value="海岳智造" aria-label="客户"></div>
+            <div class="form-row"><label>跟进方式</label><select aria-label="跟进方式"><option>电话沟通</option><option>线上会议</option><option>现场拜访</option></select></div>
+          </div>
+          <div class="form-grid">
+            <div class="form-row"><label>需求标签</label><select aria-label="需求标签"><option>交付与实施</option><option>价格与预算</option><option>权限与安全</option><option>集成与服务</option></select></div>
+            <div class="form-row"><label>下一步时间</label><input type="date" value="2026-11-01" aria-label="下一步时间"></div>
+          </div>
+          <div class="form-row"><label>客户原话或跟进记录</label><textarea placeholder="记录客户原话、关注点、异议和下一步动作"></textarea></div>
+          <div class="form-row" style="margin-bottom:0"><label>下一步动作</label><input placeholder="例如：发送试点范围确认单">
+        </div>
+        </div>
+        <div class="modal-foot"><button type="button" class="btn" data-close-modal>取消</button><button type="submit" class="btn primary">保存跟进</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">已保存</div>
+
+  <script src="./assets/lucide.min.js"></script>
+  <script>
+    const icons = () => window.lucide && window.lucide.createIcons();
+    icons();
+
+    const labels = {
+      dashboard: "今日工作台",
+      customers: "客户档案",
+      detail: "客户详情",
+      pipeline: "销售管道",
+      insights: "需求洞察",
+      report: "复盘报告"
+    };
+
+    function showView(name) {
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      const view = document.getElementById(`view-${name}`);
+      if (view) view.classList.add("active");
+      document.querySelectorAll(".nav button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.view === name || (name === "detail" && btn.dataset.view === "customers"));
+      });
+      document.getElementById("crumbCurrent").textContent = labels[name] || name;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    document.querySelectorAll("[data-view]").forEach(btn => btn.addEventListener("click", () => showView(btn.dataset.view)));
+    document.querySelectorAll("[data-view-jump]").forEach(btn => btn.addEventListener("click", () => showView(btn.dataset.viewJump)));
+    document.querySelectorAll("[data-toast]").forEach(btn => btn.addEventListener("click", () => showToast(btn.dataset.toast)));
+
+    function openCustomer(name) {
+      document.getElementById("detailCompany").textContent = name;
+      showView("detail");
+    }
+
+    document.addEventListener("click", e => {
+      const row = e.target.closest("[data-customer]");
+      if (row) openCustomer(row.dataset.customer);
+    });
+
+    document.querySelectorAll(".tabs button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+      });
+    });
+
+    const modal = document.getElementById("followModal");
+    document.querySelectorAll("[data-open-modal]").forEach(btn => btn.addEventListener("click", () => {
+      modal.classList.add("open");
+      icons();
+    }));
+    document.querySelectorAll("[data-close-modal]").forEach(btn => btn.addEventListener("click", () => modal.classList.remove("open")));
+    modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
+    document.getElementById("followForm").addEventListener("submit", e => {
+      e.preventDefault();
+      modal.classList.remove("open");
+      showToast("跟进记录已保存");
+    });
+
+    document.getElementById("generateSummary").addEventListener("click", () => {
+      const box = document.getElementById("summaryBox");
+      box.innerHTML = "<strong>AI 需求摘要：</strong>客户处于需求确认阶段，优先关注私有化部署、角色权限、历史数据导入和两周交付。<br><br><strong>建议下一步：</strong>确认试点范围，补充数据迁移方案，并约定技术与业务联合评审。";
+      showToast("需求摘要已生成");
+    });
+
+    const customerSearch = document.getElementById("customerSearch");
+    customerSearch.addEventListener("input", () => {
+      const q = customerSearch.value.trim().toLowerCase();
+      document.querySelectorAll("#customerTableBody tr").forEach(row => {
+        row.classList.toggle("hidden", q && !row.textContent.toLowerCase().includes(q));
+      });
+    });
+
+    const globalSearch = document.getElementById("globalSearch");
+    globalSearch.addEventListener("keydown", e => {
+      if (e.key === "Enter" && globalSearch.value.trim()) {
+        showView("customers");
+        customerSearch.value = globalSearch.value;
+        customerSearch.dispatchEvent(new Event("input"));
+      }
+    });
+  </script>
+</body>
+</html>

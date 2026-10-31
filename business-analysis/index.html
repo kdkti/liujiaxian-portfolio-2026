@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="核心证据：全量脚本、50,209 行复现样本、9 页分析报告">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="刘嘉贤 | 商业分析作品集">
+  <meta property="og:description" content="核心证据：全量脚本、50,209 行复现样本、9 页分析报告">
+  <meta property="og:image" content="/assets/og-business-analysis.png">
+  <link rel="icon" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/assets/site.css">
+  <title>刘嘉贤 | 商业分析作品集</title>
+</head>
+<body class="role-ba">
+  <header class="identity">
+    <div class="identity-inner">
+      <a class="brand" href="#" aria-label="返回页首"><span class="mark">罗</span><span>刘嘉贤</span></a>
+      <nav aria-label="页面导航"><a href="#cases">案例</a><a href="#evidence">证据</a><a href="#contact">联系</a></nav>
+      <div class="identity-actions"><a class="button primary" href="/downloads/liujiaxian-business-analysis-resume.pdf">下载简历 PDF</a></div>
+    </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">2026 秋招 · 商业分析</p>
+          <h1>先回答“谁”，再回答“多少”</h1>
+          <p class="hero-intro">用阿里巴巴天池 1.00 亿条淘宝用户行为公开数据，完成清洗、漏斗、留存、RF 与类目交叉分析。</p>
+          <p class="evidence-line">核心证据：全量脚本、50,209 行复现样本、9 页分析报告</p>
+          <div class="hero-actions">
+            <a class="button primary" href="/downloads/liujiaxian-business-analysis-portfolio.pdf">下载岗位作品集</a>
+            <a class="button secondary" href="data/README_数据口径与来源.md">查看数据口径</a><a class="button secondary" href="data/taobao_public_sample_50k.csv">下载公开样本</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="visual-kicker">判断与取舍</div>
+          <h2>这周先做的三件事</h2>
+          <div class="action-list"><article class="action-card"><span>1</span><div><small>行动</small><h3>拆高浏览低购买类目</h3><p>先确认损失发生在曝光、点击还是详情承接。</p></div></article><article class="action-card"><span>2</span><div><small>分层</small><h3>复盘近期高频用户</h3><p>把 RF 矩阵中的近期高频层作为复购实验起点。</p></div></article><article class="action-card"><span>3</span><div><small>验证</small><h3>重排触达时段</h3><p>重点监控 20:00-22:00，并保留对照组。</p></div></article></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="cases">
+      <div class="section-inner">
+        <div class="section-heading"><p class="eyebrow">案例摘要</p><h2>三个案例，分别证明判断、交付与验证</h2></div>
+        <div class="case-grid"><article class="case-card"><small>案例 01</small><h3>淘宝用户行为分析</h3><p>购买用户覆盖 68.3%，事件层购买只占 2.01%。</p><span>公开数据 / 1.00 亿条</span></article><article class="case-card"><small>案例 02</small><h3>类目交叉分析</h3><p>浏览前五类目中只有 2 个进入购买前五。</p><span>排名对照 / 可复现</span></article><article class="case-card"><small>案例 03</small><h3>东方财富杯风险复盘</h3><p>先界定回撤，再讨论组合收益。</p><span>真实竞赛 / 附录案例</span></article></div>
+      </div>
+    </section>
+
+    <section class="section tinted" id="evidence">
+      <div class="section-inner split">
+        <div>
+          <p class="eyebrow">证据与修正</p>
+          <h2>没有把设计目标写成已完成结果</h2>
+          <p class="large-copy">第一版只用 68.3% 的购买用户覆盖，容易掩盖事件层只有 2.01%；第二版把两套分母并排呈现。</p>
+          <p>作品集保留事实、假设和设计目标的区别。缺口会直接写出，而不是用模糊数字补齐。</p>
+        </div>
+        <div class="evidence-panel">
+          <div><span>作品集</span><a href="/downloads/liujiaxian-business-analysis-portfolio.pdf">下载 PDF</a></div>
+          <div><span>简历</span><a href="/downloads/liujiaxian-business-analysis-resume.pdf">下载 PDF</a></div>
+          <div><span>岗位链接</span><code>is.gd/ljx-ba-2026</code></div>
+          <div><span>联系方式</span><a href="mailto:13035267978@163.com">13035267978@163.com</a><span>|</span><a href="tel:13035267978">13035267978</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section chart-section">
+  <div class="section-inner">
+    
+<div class="chart-card">
+  <div class="chart-heading">
+    <div><small>交互图 · 每日互动量</small><h3>12 月 2 日跳升，周末与窗口末端同时出现</h3></div>
+    <p>深色为工作日，棕色为周末；虚线为 9 日均值。</p>
+  </div>
+  <div id="daily-chart" class="chart-canvas" role="img" aria-label="每日互动量柱状图"></div>
+  <details><summary>查看数据表</summary><table><thead><tr><th>日期</th><th>互动量</th><th>活跃用户</th><th>购买率</th></tr></thead><tbody><tr><td>2017-11-25</td><td>10,420,015</td><td>706,641</td><td>18.77%</td></tr><tr><td>2017-11-26</td><td>10,664,602</td><td>715,516</td><td>19.01%</td></tr><tr><td>2017-11-27</td><td>10,101,147</td><td>710,094</td><td>20.69%</td></tr><tr><td>2017-11-28</td><td>9,878,190</td><td>709,257</td><td>19.72%</td></tr><tr><td>2017-11-29</td><td>10,284,073</td><td>718,922</td><td>20.34%</td></tr><tr><td>2017-11-30</td><td>10,447,740</td><td>730,597</td><td>20.00%</td></tr><tr><td>2017-12-01</td><td>10,859,436</td><td>740,139</td><td>18.91%</td></tr><tr><td>2017-12-02</td><td>13,777,869</td><td>970,401</td><td>17.98%</td></tr><tr><td>2017-12-03</td><td>13,662,159</td><td>966,977</td><td>17.91%</td></tr></tbody></table></details>
+</div>
+<script src="/assets/echarts.min.js"></script>
+<script>
+const dailyLabels = ["11-25", "11-26", "11-27", "11-28", "11-29", "11-30", "12-01", "12-02", "12-03"];
+const dailyValues = [10420015, 10664602, 10101147, 9878190, 10284073, 10447740, 10859436, 13777869, 13662159];
+const weekendDays = [true, true, false, false, false, false, false, true, true];
+const chart = echarts.init(document.getElementById('daily-chart'), null, {renderer: 'svg'});
+chart.setOption({
+  animationDuration: 700,
+  animationEasing: 'quarticOut',
+  aria: {enabled: true},
+  grid: {left: 58, right: 24, top: 26, bottom: 42},
+  tooltip: {trigger: 'axis', backgroundColor: '#1c1c1a', borderWidth: 0,
+    textStyle: {color: '#f0efeb', fontSize: 12},
+    formatter: p => `${p[0].axisValue}<br/><b>${Number(p[0].value).toLocaleString()}</b> 次互动`},
+  xAxis: {type: 'category', data: dailyLabels, axisTick: {show: false},
+    axisLine: {lineStyle: {color: '#d8d7d1'}},
+    axisLabel: {color: '#77766f', fontSize: 11}},
+  yAxis: {type: 'value', splitLine: {lineStyle: {color: '#deddd6', type: 'dashed'}},
+    axisLabel: {color: '#77766f', fontSize: 11,
+      formatter: value => `${Math.round(value / 10000)}万`}},
+  series: [{
+    type: 'bar',
+    barWidth: '52%',
+    data: dailyValues.map((value, index) => ({
+      value,
+      itemStyle: {color: weekendDays[index] ? '#8a5a1f' : '#1c1c1a', borderRadius: [3, 3, 0, 0]}
+    })),
+    label: {show: true, position: 'top', color: '#1c1c1a', fontSize: 10,
+      formatter: p => `${Math.round(p.value / 10000)}万`},
+    markLine: {silent: true, symbol: 'none',
+      lineStyle: {color: '#8a5a1f', type: 'dashed', width: 1},
+      label: {show: true, color: '#8a5a1f',
+        formatter: p => `9日均值 ${Math.round(p.value / 10000)}万`},
+      data: [{yAxis: 11121692.3}]}
+  }]
+});
+addEventListener('resize', () => chart.resize());
+</script>
+
+  </div>
+</section>
+  </main>
+  <footer id="contact">
+    <div class="footer-inner">
+      <div><strong>刘嘉贤 · 商业分析</strong><p>2026 秋招 · 页面仅展示该岗位材料，不设置四岗汇总入口。</p></div>
+      <div class="footer-contact"><a href="mailto:13035267978@163.com">13035267978@163.com</a><span>|</span><a href="tel:13035267978">13035267978</a></div>
+    </div>
+  </footer>
+</body>
+</html>
