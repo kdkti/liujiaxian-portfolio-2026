@@ -54,6 +54,36 @@ p { font-size: 9.5pt; line-height: 1.72; color: #43515d; margin: 0 0 3mm; }
   height: 158mm;
   align-items: center;
 }
+.cover { display: flex; flex-direction: column; }
+.cover .cover-layout {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+.cover-bottom {
+  flex: 0 0 31mm;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5mm;
+  align-items: center;
+  padding: 4mm 0 1mm;
+  border-top: 1px solid #35434b;
+}
+.cover-bottom span {
+  display: block;
+  margin-bottom: 1.5mm;
+  color: #8fa2a8;
+  font-size: 6.8pt;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+.cover-bottom strong {
+  display: block;
+  color: #e5ecec;
+  font-size: 8.2pt;
+  line-height: 1.5;
+  font-weight: 600;
+}
 .cover-copy { max-width: 170mm; }
 .cover-meta { display: flex; gap: 9mm; margin-top: 16mm; font-size: 8pt; color: #aab9bd; }
 .cover-contact {
@@ -167,6 +197,69 @@ p { font-size: 9.5pt; line-height: 1.72; color: #43515d; margin: 0 0 3mm; }
   font-size: 7.3pt; line-height: 1.55; color: #6d7981;
   border-top: 1px solid #d4dadc; padding-top: 3mm; margin-top: 4mm;
 }
+
+.page-brief {
+  display: grid;
+  grid-template-columns: 1.15fr 1.85fr;
+  gap: 7mm;
+  min-height: 40mm;
+  margin-top: 4.5mm;
+  padding: 4.2mm 5mm;
+  background: #f0efeb;
+  border-top: 2px solid var(--accent);
+  break-inside: avoid;
+}
+.page-brief.compact {
+  min-height: 28mm;
+  margin-top: 3.5mm;
+  padding: 3.2mm 4.5mm;
+  gap: 5mm;
+}
+.page-brief.mini {
+  min-height: 20mm;
+  margin-top: 3mm;
+  padding: 2.8mm 4mm;
+  gap: 4mm;
+}
+.page-brief.tall-1 { min-height: 50mm; }
+.page-brief.tall-2 { min-height: 55mm; }
+.page-brief.tall-3 { min-height: 58mm; }
+.page-brief.tall-4 { min-height: 64mm; }
+.brief-summary span,
+.brief-item small {
+  display: block;
+  margin-bottom: 1.5mm;
+  color: var(--accent);
+  font-size: 6.8pt;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+.brief-summary p {
+  margin: 0;
+  color: #1c1c1a;
+  font-size: 9.2pt;
+  line-height: 1.58;
+  font-weight: 700;
+}
+.compact .brief-summary p { font-size: 8.6pt; }
+.mini .brief-summary p { font-size: 8.2pt; line-height: 1.45; }
+.brief-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4mm;
+}
+.brief-item {
+  padding-left: 3.5mm;
+  border-left: 1px solid #cfcec7;
+}
+.brief-item p {
+  margin: 0;
+  color: #5f5e58;
+  font-size: 7.5pt;
+  line-height: 1.52;
+}
+.compact .brief-item p { font-size: 7.2pt; line-height: 1.45; }
+.mini .brief-item p { font-size: 7pt; line-height: 1.4; }
 
 .lf-chart {
   background: #f0efeb;
