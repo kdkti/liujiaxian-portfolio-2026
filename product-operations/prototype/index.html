@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>客户分层与 SOP 运营台</title>
+  <style>
+    :root {
+      --ink: #18242b;
+      --muted: #66747b;
+      --line: #d7dddf;
+      --paper: #f2f3ef;
+      --surface: #fbfcf8;
+      --accent: #1f745c;
+      --accent-soft: #e5f0eb;
+      --warn: #a85d2a;
+      --warn-soft: #f7eadf;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+    }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    .app { min-height: 100vh; display: grid; grid-template-columns: 214px minmax(0, 1fr); }
+    .rail { background: #17261f; color: #f5f8f4; padding: 22px 16px; display: flex; flex-direction: column; }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 24px; font-weight: 750; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; background: #d6a75d; color: #1b271f; border-radius: 7px; }
+    .brand-mark svg { width: 20px; height: 20px; }
+    .nav { display: grid; gap: 6px; }
+    .nav button {
+      width: 100%; min-height: 44px; padding: 0 12px; display: flex; align-items: center; gap: 10px;
+      border: 0; border-radius: 6px; background: transparent; color: #bfcbc4; cursor: pointer; text-align: left;
+    }
+    .nav button.active { background: #2b463a; color: #fff; }
+    .nav svg { width: 17px; height: 17px; }
+    .rail-note {
+      margin-top: auto; padding: 14px 10px 2px; border-top: 1px solid #33463b;
+      color: #91a298; font-size: 11px; line-height: 1.65;
+    }
+    main { padding: 22px 26px 30px; min-width: 0; }
+    .topbar { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 18px; }
+    .eyebrow { color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .11em; }
+    h1 { margin: 5px 0 0; font-size: clamp(26px, 3vw, 38px); letter-spacing: 0; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .search { min-width: 230px; height: 40px; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 0 12px; }
+    .primary {
+      min-height: 40px; padding: 0 15px; border: 0; border-radius: 6px;
+      background: var(--accent); color: #fff; font-weight: 700; cursor: pointer;
+    }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+    .metric { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--accent); padding: 14px 16px; }
+    .metric span { display: block; color: var(--muted); font-size: 11px; margin-bottom: 7px; }
+    .metric strong { font-size: 24px; font-weight: 750; }
+    .metric.alert { border-top-color: var(--warn); }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .75fr); gap: 14px; align-items: start; }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+    .panel-head { display: flex; justify-content: space-between; gap: 14px; align-items: center; padding: 15px 17px; border-bottom: 1px solid var(--line); }
+    .panel-head h2 { margin: 0; font-size: 16px; }
+    .segmented { display: inline-flex; border: 1px solid var(--line); background: #fff; border-radius: 5px; padding: 3px; }
+    .segmented button { min-height: 30px; padding: 0 10px; border: 0; background: transparent; border-radius: 4px; color: var(--muted); cursor: pointer; }
+    .segmented button.active { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+    .queue { width: 100%; border-collapse: collapse; }
+    .queue th, .queue td { padding: 11px 13px; border-bottom: 1px solid #e3e7e4; text-align: left; font-size: 12px; vertical-align: middle; }
+    .queue th { color: var(--muted); font-size: 10px; font-weight: 700; background: #f7f8f4; }
+    .queue tr[data-id] { cursor: pointer; }
+    .queue tr[data-id]:hover, .queue tr.selected { background: var(--accent-soft); }
+    .customer { font-weight: 700; }
+    .sub { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; }
+    .tag { display: inline-flex; align-items: center; min-height: 23px; padding: 0 8px; border-radius: 99px; background: #eef1ee; color: #53635a; font-size: 10px; white-space: nowrap; }
+    .tag.a { background: #dcece5; color: #1b644e; }
+    .tag.risk { background: var(--warn-soft); color: var(--warn); }
+    .tag.voc { background: #e6edf1; color: #315f74; }
+    .detail { padding: 17px; }
+    .detail-kicker { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+    .detail h2 { margin: 7px 0 3px; font-size: 21px; }
+    .detail-meta { color: var(--muted); font-size: 11px; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0; }
+    .fact { padding: 10px; background: #f4f5f1; }
+    .fact span { display: block; color: var(--muted); font-size: 9px; margin-bottom: 4px; }
+    .fact strong { font-size: 12px; }
+    .section-mini { margin-top: 16px; }
+    .section-mini h3 { margin: 0 0 8px; font-size: 12px; }
+    .checklist { display: grid; gap: 7px; }
+    .checkitem { min-height: 39px; display: flex; align-items: center; gap: 9px; padding: 7px 9px; border: 1px solid #e0e5e2; background: #fff; cursor: pointer; }
+    .checkitem input { width: 17px; height: 17px; accent-color: var(--accent); }
+    .checkitem.done span { color: #8a9690; text-decoration: line-through; }
+    .hint { margin: 12px 0 0; color: var(--muted); font-size: 10px; line-height: 1.65; }
+    .section-view[hidden] { display: none; }
+    .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
+    .segment-card { border: 1px solid var(--line); background: #fff; padding: 15px; min-height: 130px; }
+    .segment-card b { font-size: 13px; }
+    .segment-card p { margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.65; }
+    .segment-card .rule { display: block; margin-top: 9px; color: var(--accent); font-size: 10px; font-weight: 700; }
+    .voc-list { padding: 12px 15px 17px; display: grid; gap: 8px; }
+    .voc-row { display: grid; grid-template-columns: 90px 1fr 80px; gap: 10px; align-items: center; background: #fff; border: 1px solid var(--line); padding: 11px 12px; }
+    .voc-row span { font-size: 11px; color: var(--muted); }
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(90px);
+      padding: 10px 15px; border-radius: 6px; background: #17261f; color: #fff; font-size: 12px;
+      opacity: 0; transition: .2s ease; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .rail { min-width: 0; overflow: hidden; padding: 12px 14px; flex-direction: row; align-items: center; gap: 10px; }
+      .brand { flex: 0 0 auto; padding: 0; white-space: nowrap; }
+      .nav { flex: 1 1 auto; min-width: 0; display: flex; overflow-x: auto; }
+      .nav button { flex: 0 0 auto; width: auto; white-space: nowrap; }
+      .rail-note { display: none; }
+      .workspace { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .brand > span:last-child { display: none; }
+      .brand-mark { width: 32px; height: 32px; }
+      main { padding: 16px 12px 24px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .top-actions { width: 100%; }
+      .search { min-width: 0; flex: 1; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .panel-head { align-items: flex-start; flex-direction: column; }
+      .queue th:nth-child(3), .queue td:nth-child(3), .queue th:nth-child(5), .queue td:nth-child(5) { display: none; }
+      .queue th, .queue td { padding: 10px 9px; }
+      .cards { grid-template-columns: 1fr; }
+      .voc-row { grid-template-columns: 1fr; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail">
+      <div class="brand"><span class="brand-mark"><i data-lucide="radar"></i></span><span>客户运营台</span></div>
+      <nav class="nav" aria-label="运营台导航">
+        <button class="active" data-view="today"><i data-lucide="list-todo"></i>今日跟进</button>
+        <button data-view="segments"><i data-lucide="layers-3"></i>客户分层</button>
+        <button data-view="voc"><i data-lucide="messages-square"></i>VOC 回流</button>
+      </nav>
+      <div class="rail-note">原型说明：客户和任务均为脱敏演示数据，用于展示分层规则、SOP 和本周复盘方式。</div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">OPS WORKBENCH / WEEK 32</div>
+          <h1>先处理会改变动作的客户信号</h1>
+        </div>
+        <div class="top-actions">
+          <input class="search" id="search" type="search" placeholder="搜索客户、标签或负责人">
+          <button class="primary" id="new-task">新建跟进</button>
+        </div>
+      </header>
+
+      <section class="metrics" aria-label="运营核心指标">
+        <div class="metric"><span>今日待跟进</span><strong id="metric-pending">8</strong></div>
+        <div class="metric alert"><span>超过 14 天未推进</span><strong>3</strong></div>
+        <div class="metric"><span>A 级客户</span><strong>12</strong></div>
+        <div class="metric"><span>本周 VOC 回流</span><strong>27</strong></div>
+      </section>
+
+      <div class="workspace">
+        <section class="panel section-view" id="view-today">
+          <div class="panel-head">
+            <h2>今日行动队列</h2>
+            <div class="segmented" id="filters">
+              <button class="active" data-filter="all">全部</button>
+              <button data-filter="A">A 级</button>
+              <button data-filter="B">B 级</button>
+              <button data-filter="D">暂停</button>
+            </div>
+          </div>
+          <table class="queue">
+            <thead><tr><th>客户</th><th>信号</th><th>分层</th><th>下一步</th><th>到期</th></tr></thead>
+            <tbody id="queue-body"></tbody>
+          </table>
+        </section>
+
+        <section class="panel section-view" id="view-segments" hidden>
+          <div class="panel-head"><h2>客户分层规则</h2><span class="tag">按动作分层，不按主观热度</span></div>
+          <div class="cards">
+            <article class="segment-card"><b>A · 高意向</b><p>需求明确、决策角色清楚、时间窗口在 30 天内。</p><span class="rule">每 1-2 天跟进，下一次时间必须明确</span></article>
+            <article class="segment-card"><b>B · 机会型</b><p>场景成立，但预算、角色或采购流程仍需确认。</p><span class="rule">每周 1-2 次，先补关键信息再报价</span></article>
+            <article class="segment-card"><b>C · 培育型</b><p>有潜在需求，但时间窗口不清晰或当前优先级较低。</p><span class="rule">每 2-4 周轻量触达，记录唤醒条件</span></article>
+            <article class="segment-card"><b>D · 暂停</b><p>无真实问题、无负责人、无预算或明确暂缓。</p><span class="rule">停止高频触达，设置日期和唤醒事件</span></article>
+          </div>
+        </section>
+
+        <section class="panel section-view" id="view-voc" hidden>
+          <div class="panel-head"><h2>本周客户声音</h2><span class="tag voc">保留原话和影响阶段</span></div>
+          <div class="voc-list">
+            <div class="voc-row"><strong>交付与权限</strong><span>“我们现在最担心数据导入后权限怎么控。”</span><span class="tag risk">影响决策</span></div>
+            <div class="voc-row"><strong>价格与范围</strong><span>“先看一个部门试点，范围太大内部很难审批。”</span><span class="tag">影响报价</span></div>
+            <div class="voc-row"><strong>内容与案例</strong><span>“有没有同规模制造业客户的落地案例？”</span><span class="tag voc">影响信任</span></div>
+            <div class="voc-row"><strong>试用与交付</strong><span>“能否先用两周验证导入和提醒是否可用？”</span><span class="tag a">影响推进</span></div>
+          </div>
+        </section>
+
+        <aside class="panel detail" aria-live="polite">
+          <div class="detail-kicker">SELECTED CUSTOMER</div>
+          <h2 id="detail-name">深圳华衡制造</h2>
+          <div class="detail-meta" id="detail-meta">A 级 · 制造业 · 负责人 林可</div>
+          <div class="facts">
+            <div class="fact"><span>最近沟通</span><strong id="detail-date">今天 10:20</strong></div>
+            <div class="fact"><span>阶段</span><strong id="detail-stage">需求确认</strong></div>
+            <div class="fact"><span>主要异议</span><strong id="detail-objection">权限与导入</strong></div>
+            <div class="fact"><span>下一次</span><strong id="detail-next">确认试点范围</strong></div>
+          </div>
+          <div class="section-mini">
+            <h3>跟进 SOP</h3>
+            <div class="checklist">
+              <label class="checkitem"><input type="checkbox" checked><span>确认业务问题和影响对象</span></label>
+              <label class="checkitem"><input type="checkbox"><span>确认决策角色与采购流程</span></label>
+              <label class="checkitem"><input type="checkbox"><span>发送同规模案例与试点范围</span></label>
+              <label class="checkitem"><input type="checkbox"><span>约下一次评审并记录退出条件</span></label>
+            </div>
+            <p class="hint">勾选会即时更新完成状态。退出也必须记录原因，避免客户长期停留在“等回复”。</p>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast">操作已记录</div>
+  <script src="assets/lucide.min.js"></script>
+  <script>
+    const tasks = [
+      { id: 1, name: "深圳华衡制造", signal: "要求权限与导入方案", segment: "A", next: "确认试点范围", date: "今天", meta: "A 级 · 制造业 · 负责人 林可", stage: "需求确认", objection: "权限与导入" },
+      { id: 2, name: "东莞启程电子", signal: "报价后 5 天无反馈", segment: "A", next: "确认决策流程", date: "今天", meta: "A 级 · 电子制造 · 负责人 周岚", stage: "方案报价", objection: "价格与范围" },
+      { id: 3, name: "佛山新锐家居", signal: "浏览案例 3 次", segment: "B", next: "补充同行案例", date: "明天", meta: "B 级 · 家居 · 负责人 林可", stage: "需求确认", objection: "缺少案例" },
+      { id: 4, name: "广州南科设备", signal: "超过 14 天未更新", segment: "B", next: "主管复核", date: "逾期 2 天", meta: "B 级 · 设备制造 · 负责人 陈明", stage: "方案评审", objection: "负责人变更" },
+      { id: 5, name: "惠州恒美包装", signal: "明确暂缓至 Q4", segment: "D", next: "设置唤醒条件", date: "10 月 8 日", meta: "D 级 · 包装 · 负责人 周岚", stage: "暂停", objection: "时间窗口" }
+    ];
+    const queueBody = document.querySelector("#queue-body");
+    const search = document.querySelector("#search");
+    const pending = document.querySelector("#metric-pending");
+    let currentFilter = "all";
+    let selectedId = 1;
+
+    function renderQueue() {
+      const query = search.value.trim().toLowerCase();
+      const filtered = tasks.filter(task => {
+        const matchesFilter = currentFilter === "all" || task.segment === currentFilter;
+        const haystack = `${task.name} ${task.signal} ${task.meta} ${task.next}`.toLowerCase();
+        return matchesFilter && (!query || haystack.includes(query));
+      });
+      queueBody.innerHTML = filtered.map(task => `
+        <tr data-id="${task.id}" class="${task.id === selectedId ? "selected" : ""}">
+          <td><span class="customer">${task.name}</span><span class="sub">${task.meta.split(" · ")[2] || ""}</span></td>
+          <td>${task.signal}</td>
+          <td><span class="tag ${task.segment === "A" ? "a" : task.segment === "D" ? "risk" : ""}">${task.segment} 级</span></td>
+          <td>${task.next}</td>
+          <td>${task.date}</td>
+        </tr>`).join("");
+      queueBody.querySelectorAll("tr[data-id]").forEach(row => {
+        row.addEventListener("click", () => selectTask(Number(row.dataset.id)));
+      });
+      pending.textContent = String(Math.max(0, 8 - document.querySelectorAll(".checkitem input:checked").length));
+    }
+
+    function selectTask(id) {
+      selectedId = id;
+      const task = tasks.find(item => item.id === id);
+      document.querySelector("#detail-name").textContent = task.name;
+      document.querySelector("#detail-meta").textContent = task.meta;
+      document.querySelector("#detail-stage").textContent = task.stage;
+      document.querySelector("#detail-objection").textContent = task.objection;
+      document.querySelector("#detail-next").textContent = task.next;
+      document.querySelector("#detail-date").textContent = task.date === "今天" ? "今天 10:20" : task.date;
+      renderQueue();
+    }
+
+    document.querySelectorAll(".nav button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".nav button").forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        document.querySelectorAll(".section-view").forEach(view => { view.hidden = true; });
+        document.querySelector(`#view-${button.dataset.view}`).hidden = false;
+      });
+    });
+
+    document.querySelectorAll("#filters button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("#filters button").forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        currentFilter = button.dataset.filter;
+        renderQueue();
+      });
+    });
+
+    search.addEventListener("input", renderQueue);
+    document.querySelectorAll(".checkitem input").forEach(input => {
+      input.addEventListener("change", () => {
+        input.closest(".checkitem").classList.toggle("done", input.checked);
+        document.querySelector("#toast").classList.add("show");
+        setTimeout(() => document.querySelector("#toast").classList.remove("show"), 1200);
+        renderQueue();
+      });
+    });
+    document.querySelector("#new-task").addEventListener("click", () => {
+      document.querySelector("#toast").textContent = "原型演示：新建跟进入口";
+      document.querySelector("#toast").classList.add("show");
+      setTimeout(() => {
+        document.querySelector("#toast").classList.remove("show");
+        document.querySelector("#toast").textContent = "操作已记录";
+      }, 1300);
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+    renderQueue();
+  </script>
+</body>
+</html>

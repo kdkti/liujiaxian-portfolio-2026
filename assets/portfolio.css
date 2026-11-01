@@ -162,8 +162,20 @@ p { font-size: 9.5pt; line-height: 1.72; color: #43515d; margin: 0 0 3mm; }
   object-fit: cover; object-position: top left;
 }
 .shot-wide { height: 86mm; }
+.shot-ops { height: 78mm; object-fit: contain; object-position: top center; }
 .shot-tall { height: 105mm; }
 .caption { font-size: 7.2pt; color: #7a868d; margin-top: 1.8mm; text-align: center; }
+.deliverable-links {
+  display: flex; gap: 3mm; flex-wrap: wrap; margin-top: 4mm;
+}
+.deliverable-links a {
+  display: inline-flex; align-items: center; min-height: 9mm; padding: 0 4mm;
+  border: 1px solid var(--accent); background: var(--accent); color: #fff;
+  font-size: 8pt; font-weight: 700; text-decoration: none;
+}
+.deliverable-links a + a {
+  background: #fff; color: var(--accent);
+}
 
 .artifact {
   border: 1px solid #cfd7db; background: #fff; padding: 5mm;
