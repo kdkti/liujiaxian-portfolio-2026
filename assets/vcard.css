@@ -53,6 +53,18 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .contact-list a { display: inline-block; font-size: 13px; overflow-wrap: anywhere; text-decoration: none; }
 .contact-list a:hover { text-decoration: underline; }
 .profile-actions { display: grid; gap: 8px; }
+.pdf-actions { display: grid; }
+.pdf-download {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 12px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+.pdf-download:hover { text-decoration-thickness: 2px; }
 .button { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border: 1px solid transparent; border-radius: 9px; text-decoration: none; font-size: 14px; font-weight: 700; }
 .primary { color: var(--accent-ink); background: var(--accent); }
 .primary:hover { filter: brightness(1.08); }
