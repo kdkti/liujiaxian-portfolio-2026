@@ -130,6 +130,10 @@
       .voc-row { grid-template-columns: 1fr; gap: 4px; }
     }
   </style>
+  <style>
+    .portfolio-return { position:fixed; z-index:100; right:14px; bottom:14px; display:inline-flex; align-items:center; gap:8px; min-height:42px; padding:0 12px; border-radius:8px; color:#fff; background:#17261f; box-shadow:0 2px 12px #0003; text-decoration:none; font-size:13px; }
+    .portfolio-return:focus-visible { outline:3px solid #d6a75d; }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -311,5 +315,6 @@
     if (window.lucide) window.lucide.createIcons();
     renderQueue();
   </script>
+<a class="portfolio-return" href="../index.html">← 返回作品集</a>
 </body>
 </html>

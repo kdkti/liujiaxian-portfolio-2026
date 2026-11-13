@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>客户跟进核心流程</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f4f6f8;
+      color: #17212b;
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 48px;
+    }
+    .flow {
+      width: 1400px;
+      max-width: 100%;
+      background: #fff;
+      border: 1px solid #d8dee5;
+      border-radius: 8px;
+      padding: 34px 38px 38px;
+      box-shadow: 0 8px 30px rgba(16,42,51,.05);
+    }
+    .kicker { color: #0c7c74; font-size: 11px; letter-spacing: 1.6px; font-weight: 700; }
+    h1 { margin: 8px 0 8px; font-size: 27px; letter-spacing: 0; }
+    .sub { color: #667085; font-size: 13px; margin: 0 0 32px; }
+    .track { display: grid; grid-template-columns: repeat(5, 1fr); gap: 26px; align-items: stretch; position: relative; }
+    .track::before {
+      content: ""; position: absolute; top: 40px; left: 8%; right: 8%; height: 2px;
+      background: #d5e9e6;
+    }
+    .step { position: relative; padding-top: 5px; }
+    .node {
+      width: 72px; height: 72px; border-radius: 50%; position: relative; z-index: 1;
+      border: 1px solid #b9ddd8; background: #e8f5f2; color: #0c7c74;
+      display: grid; place-items: center; margin-left: 4px;
+    }
+    .node svg { width: 28px; height: 28px; stroke-width: 1.7; }
+    .step:nth-child(2) .node { background: #edf3ff; color: #2563eb; border-color: #ccdafa; }
+    .step:nth-child(3) .node { background: #fff6e8; color: #b45309; border-color: #f0d9b4; }
+    .step:nth-child(4) .node { background: #f1f4f6; color: #52606d; border-color: #d8e0e5; }
+    .step:nth-child(5) .node { background: #102a33; color: #fff; border-color: #102a33; }
+    .step-no { font-size: 10px; color: #98a2ad; font-weight: 700; margin-top: 15px; }
+    .step h3 { font-size: 16px; margin: 6px 0 8px; }
+    .step p { margin: 0; color: #667085; line-height: 1.7; font-size: 12px; min-height: 62px; }
+    .artifacts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .tag { font-size: 10px; padding: 4px 7px; border: 1px solid #dfe6eb; border-radius: 4px; color: #52606d; background: #fafbfc; }
+    .bottom {
+      margin-top: 34px; padding-top: 20px; border-top: 1px solid #e5eaee;
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px;
+    }
+    .bottom div strong { display: block; font-size: 12px; margin-bottom: 5px; }
+    .bottom div span { color: #667085; font-size: 11px; line-height: 1.65; }
+    .legend { display: flex; gap: 16px; margin-top: 14px; font-size: 10px; color: #7b8794; }
+    .legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .legend i { width: 7px; height: 7px; border-radius: 50%; background: #0c7c74; }
+  </style>
+</head>
+<body>
+  <main class="flow">
+    <div class="kicker">CORE WORKFLOW</div>
+    <h1>客户跟进核心流程</h1>
+    <p class="sub">从客户进入、需求澄清到跟进复盘，所有关键动作围绕“下一步行动”沉淀。</p>
+    <div class="track">
+      <section class="step">
+        <div class="node"><i data-lucide="inbox"></i></div>
+        <div class="step-no">STEP 01</div>
+        <h3>进入线索池</h3>
+        <p>记录客户来源、联系人、行业与初始需求，自动提示重复客户。</p>
+        <div class="artifacts"><span class="tag">来源字段</span><span class="tag">客户去重</span></div>
+      </section>
+      <section class="step">
+        <div class="node"><i data-lucide="messages-square"></i></div>
+        <div class="step-no">STEP 02</div>
+        <h3>结构化沟通</h3>
+        <p>把客户原话转为需求、异议、决策角色和下一步动作，不再散落在聊天记录。</p>
+        <div class="artifacts"><span class="tag">需求标签</span><span class="tag">异议记录</span></div>
+      </section>
+      <section class="step">
+        <div class="node"><i data-lucide="waypoints"></i></div>
+        <div class="step-no">STEP 03</div>
+        <h3>判断商机阶段</h3>
+        <p>根据需求清晰度、决策链与时间窗口推进 Pipeline，识别停滞商机。</p>
+        <div class="artifacts"><span class="tag">阶段规则</span><span class="tag">下一步时间</span></div>
+      </section>
+      <section class="step">
+        <div class="node"><i data-lucide="clipboard-check"></i></div>
+        <div class="step-no">STEP 04</div>
+        <h3>完成跟进任务</h3>
+        <p>工作台按到期时间与意向分排序，支持提醒、复制摘要和跨团队协同。</p>
+        <div class="artifacts"><span class="tag">任务提醒</span><span class="tag">协同记录</span></div>
+      </section>
+      <section class="step">
+        <div class="node"><i data-lucide="chart-no-axes-combined"></i></div>
+        <div class="step-no">STEP 05</div>
+        <h3>沉淀洞察与复盘</h3>
+        <p>高频需求回流产品和运营，形成周报、话术优化和产品需求池。</p>
+        <div class="artifacts"><span class="tag">VOC 看板</span><span class="tag">周度复盘</span></div>
+      </section>
+    </div>
+    <div class="bottom">
+      <div><strong>核心设计原则</strong><span>录入成本足够低，下一步动作必须明确，客户原话始终可追溯。</span></div>
+      <div><strong>关键状态</strong><span>线索 → 初联 → 需求确认 → 方案报价 → 赢单 / 丢单 / 暂停。</span></div>
+      <div><strong>角色协同</strong><span>销售负责记录，销售主管看管道，产品和运营消费结构化反馈。</span></div>
+    </div>
+    <div class="legend"><span><i></i>客户动作</span><span><i style="background:#2563eb"></i>销售动作</span><span><i style="background:#d97706"></i>管理动作</span></div>
+  </main>
+  <script src="./assets/lucide.min.js"></script>
+  <script>window.lucide && window.lucide.createIcons();</script>
+</body>
+</html>
